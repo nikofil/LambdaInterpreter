@@ -1,3 +1,5 @@
+module Parser where
+
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-tabs #-}
