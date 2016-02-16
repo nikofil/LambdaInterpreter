@@ -36,7 +36,29 @@ lambdaApplication = do
   return(foldl1 Application apps)
 
 simple :: Parser Term
-simple = lambdaVar <|> paren
+simple = lambdaVar <|> paren <|> churchNum <|> encodings
+
+-- Parse positive integers as Church numerals
+churchNum :: Parser Term
+churchNum = do
+  v <- many1 digit
+  return(Abstraction "F" (Abstraction "X" (applyTimes (read v :: Int))))
+
+-- Apply the successor function n times
+applyTimes 0 = Var "X"
+applyTimes n = Application (Var "F") (applyTimes (n-1))
+
+-- Datatype encodings begin with a @ to separate them from variables
+encodings :: Parser Term
+encodings = do
+  char '@'
+  datatype <- many letter
+  return(myparse (case datatype of
+    "succ"  -> "\\n.\\f.\\x.f(nfx)"
+    "true"  -> "\\a.\\b.a"
+    "false" -> "\\a.\\b.b"
+    "if"    -> "\\p.\\a.\\b.pab"
+   ))
 
 lambdaVar :: Parser Term
 lambdaVar = do
