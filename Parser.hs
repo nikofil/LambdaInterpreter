@@ -11,9 +11,9 @@ import Text.Parsec.String
 import qualified Text.PrettyPrint as PP
 
 data Term = Var String
-		  | Application Term Term
-		  | Abstraction String Term
-		  deriving(Show,Eq)
+          | Application Term Term
+          | Abstraction String Term
+          deriving(Show,Eq)
 
 data Result = Res Term Int [Term] [String] deriving(Show,Eq)
 
@@ -24,11 +24,11 @@ lambdaTerm = lambdaAbstraction <|> lambdaApplication <|> simple
 
 lambdaAbstraction :: Parser Term
 lambdaAbstraction = do
-  	char '\\'
-  	var <- letter <|> char '$' <|> char '#'
-  	char '.'
-  	body <- lambdaTerm
-  	return(Abstraction [var] body)
+      char '\\'
+      var <- letter <|> char '$' <|> char '#'
+      char '.'
+      body <- lambdaTerm
+      return(Abstraction [var] body)
 
 lambdaApplication :: Parser Term
 lambdaApplication = do
@@ -54,7 +54,7 @@ encodings = do
   char '@'
   datatype <- many letter
   return(myparse (case datatype of
-    "succ"  -> "\\n.\\f.\\x.f(nfx)"
+    "succ"  -> "\\n.\\$.\\#.$(n$#)"
     "true"  -> "\\a.\\b.a"
     "false" -> "\\a.\\b.b"
     "if"    -> "\\p.\\a.\\b.pab"
@@ -74,8 +74,8 @@ paren = do
 
 myparse :: String -> Term
 myparse str = case (parse lambdaTerm "" str) of
-	Left msg -> error $ show msg
-	Right term' -> term'
+    Left msg -> error $ show msg
+    Right term' -> term'
 
 test = myparse "\\z.(\\f.\\x.fzx)(\\y.y)"
 pair = myparse "\\x.\\y.\\z.zxy"
