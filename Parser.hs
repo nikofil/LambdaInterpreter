@@ -5,6 +5,7 @@ module Parser where
 {-# OPTIONS_GHC -fno-warn-tabs #-}
 
 import Data.List
+import Data.Maybe
 import Data.Char
 import Text.Parsec
 import Text.Parsec.String
@@ -82,9 +83,26 @@ pair = myparse "\\x.\\y.\\z.zxy"
 
 ----------------------- PRETTY PRINT ------------------------
 
+isChurchAbstr (Abstraction "#" _) = True
+isChurchAbstr _ = False
+
+getChurchTerm (Abstraction "#" x) = x
+
+getInt (Just x) = PP.int x
+
+addOne (Just x) = Just (x+1)
+addOne Nothing = Nothing
+
+churchToInt (Application (Var "$") x) = addOne (churchToInt x)
+churchToInt (Var "#") = Just 0
+churchToInt _ = Nothing
+
 ppr :: Term -> PP.Doc
 ppr (Var x) = PP.text x
-ppr (Abstraction x e) = PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)]
+ppr (Abstraction x e) = 
+    let intRepr = (if (x == "$") && (isChurchAbstr e) then (churchToInt (getChurchTerm e)) else Nothing) in
+    if isJust intRepr then getInt intRepr
+        else(PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
 ppr apply = PP.fcat (map parenApp (args apply))
 
 
