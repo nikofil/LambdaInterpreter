@@ -88,8 +88,6 @@ isChurchAbstr _ = False
 
 getChurchTerm (Abstraction "#" x) = x
 
-getInt (Just x) = PP.int x
-
 addOne (Just x) = Just (x+1)
 addOne Nothing = Nothing
 
@@ -101,7 +99,7 @@ ppr :: Term -> PP.Doc
 ppr (Var x) = PP.text x
 ppr (Abstraction x e) = 
     let intRepr = (if (x == "$") && (isChurchAbstr e) then (churchToInt (getChurchTerm e)) else Nothing) in
-    if isJust intRepr then getInt intRepr
+    if isJust intRepr then PP.int(fromJust intRepr)
         else(PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
 ppr apply = PP.fcat (map parenApp (args apply))
 
