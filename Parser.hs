@@ -25,7 +25,7 @@ lambdaTerm = lambdaAbstraction <|> lambdaApplication <|> simple
 lambdaAbstraction :: Parser Term
 lambdaAbstraction = do
   	char '\\'
-  	var <- letter
+  	var <- letter <|> char '$' <|> char '#'
   	char '.'
   	body <- lambdaTerm
   	return(Abstraction [var] body)
@@ -42,11 +42,11 @@ simple = lambdaVar <|> paren <|> churchNum <|> encodings
 churchNum :: Parser Term
 churchNum = do
   v <- many1 digit
-  return(Abstraction "F" (Abstraction "X" (applyTimes (read v :: Int))))
+  return(Abstraction "$" (Abstraction "#" (applyTimes (read v :: Int))))
 
 -- Apply the successor function n times
-applyTimes 0 = Var "X"
-applyTimes n = Application (Var "F") (applyTimes (n-1))
+applyTimes 0 = Var "#"
+applyTimes n = Application (Var "$") (applyTimes (n-1))
 
 -- Datatype encodings begin with a @ to separate them from variables
 encodings :: Parser Term
@@ -62,7 +62,7 @@ encodings = do
 
 lambdaVar :: Parser Term
 lambdaVar = do
-  var <- letter
+  var <- letter <|> char '$' <|> char '#'
   return(Var [var])
 
 paren :: Parser Term
