@@ -83,14 +83,17 @@ pair = myparse "\\x.\\y.\\z.zxy"
 
 ----------------------- PRETTY PRINT ------------------------
 
+-- Check if this is in fact a Church numeral
 isChurchAbstr (Abstraction "#" _) = True
 isChurchAbstr _ = False
 
 getChurchTerm (Abstraction "#" x) = x
 
+-- If we are still parsing the numeral successfully add 1, else propagate the Nothing
 addOne (Just x) = Just (x+1)
 addOne Nothing = Nothing
 
+-- Parse each $ application as +1, if this stops being a Church numeral return Nothing
 churchToInt (Application (Var "$") x) = addOne (churchToInt x)
 churchToInt (Var "#") = Just 0
 churchToInt _ = Nothing
@@ -98,9 +101,12 @@ churchToInt _ = Nothing
 ppr :: Term -> PP.Doc
 ppr (Var x) = PP.text x
 ppr (Abstraction x e) = 
+    -- if this starts with \$.\#.term then try to parse it as a numeral
     let intRepr = (if (x == "$") && (isChurchAbstr e) then (churchToInt (getChurchTerm e)) else Nothing) in
+    -- if we parsed it as a numeral successfully, return the number representation
     if isJust intRepr then PP.int(fromJust intRepr)
-        else(PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
+    -- else parse it as a normal term
+    else (PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
 ppr apply = PP.fcat (map parenApp (args apply))
 
 
