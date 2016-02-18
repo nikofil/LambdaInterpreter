@@ -89,12 +89,9 @@ isChurchAbstr _ = False
 
 getChurchTerm (Abstraction "#" x) = x
 
--- If we are still parsing the numeral successfully add 1, else propagate the Nothing
-addOne (Just x) = Just (x+1)
-addOne Nothing = Nothing
 
 -- Parse each $ application as +1, if this stops being a Church numeral return Nothing
-churchToInt (Application (Var "$") x) = addOne (churchToInt x)
+churchToInt (Application (Var "$") x) = (churchToInt x) >>= (Just.(+1))
 churchToInt (Var "#") = Just 0
 churchToInt _ = Nothing
 
