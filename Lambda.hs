@@ -27,19 +27,20 @@ replaceVar (Application x y) var rep = Application (replaceVar x var rep) (repla
 
 replaceVar (Var v) var rep = if v == var then rep else (Var v)
 
-replaceVar (Abstraction x y) var rep =
-    if x == var then (Abstraction x y) -- the new abstraction binds the var we are trying to replace, so we stop here
-    else if (isFreeIn x rep) then -- in the term exists a free var with the same name which we need to a-rename first
+replaceVar (Abstraction x y) var rep
+    | x == var = (Abstraction x y) -- the new abstraction binds the var we are trying to replace, so we stop here
+    | (isFreeIn x rep) = -- in the term exists a free var with the same name which we need to a-rename first
         let newvar = a_rename y in
         (Abstraction newvar (replaceVar (replaceVar y x (Var newvar)) var rep))
-    else (Abstraction x (replaceVar y var rep)) -- replace normally
+    | otherwise = (Abstraction x (replaceVar y var rep)) -- replace normally
 
 -- visit all terms depth-first until we find a function application, upon which we use the replace method
 visit (Application (Abstraction x y) z) = replaceVar y x z
 
-visit (Application x y) = let res = visit x in
-    if res /= x then (Application res y)
-                else (Application x (visit y))
+visit (Application x y)
+    | res /= x = (Application res y)
+    | otherwise = (Application x (visit y))
+    where res = visit x
 
 visit (Var v) = Var v
 
