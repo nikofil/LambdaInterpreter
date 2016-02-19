@@ -87,7 +87,7 @@ parseChurch (Abstraction "$" (Abstraction "#" term)) = churchToInt term
 parseChurch _ = Nothing
 
 -- Parse each $ application as +1, if this stops being a Church numeral return Nothing
-churchToInt (Application (Var "$") x) = (churchToInt x) >>= (Just.(+1))
+churchToInt (Application (Var "$") x) = fmap (+1) (churchToInt x)
 churchToInt (Var "#") = Just 0
 churchToInt _ = Nothing
 
