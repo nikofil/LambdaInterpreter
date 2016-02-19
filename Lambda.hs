@@ -20,6 +20,8 @@ allFreeIn (Application x y) = allFreeIn x ++ allFreeIn y
 
 allFreeIn (Var v) = v
 
+allFreeIn (Abstraction x y) = (allFreeIn y) \\ x
+
 -- (replace t var rep) replaces in the term t all instances of the variable named var with the term rep
 replaceVar (Application x y) var rep = Application (replaceVar x var rep) (replaceVar y var rep)
 

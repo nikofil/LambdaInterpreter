@@ -5,7 +5,6 @@ module Parser where
 {-# OPTIONS_GHC -fno-warn-tabs #-}
 
 import Data.List
-import Data.Maybe
 import Data.Char
 import Text.Parsec
 import Text.Parsec.String
@@ -83,12 +82,9 @@ pair = myparse "\\x.\\y.\\z.zxy"
 
 ----------------------- PRETTY PRINT ------------------------
 
--- Check if this is in fact a Church numeral
-isChurchAbstr (Abstraction "#" _) = True
-isChurchAbstr _ = False
-
-getChurchTerm (Abstraction "#" x) = x
-
+-- Try to parse Church numeral
+parseChurch (Abstraction "$" (Abstraction "#" term)) = churchToInt term
+parseChurch _ = Nothing
 
 -- Parse each $ application as +1, if this stops being a Church numeral return Nothing
 churchToInt (Application (Var "$") x) = (churchToInt x) >>= (Just.(+1))
@@ -98,12 +94,13 @@ churchToInt _ = Nothing
 ppr :: Term -> PP.Doc
 ppr (Var x) = PP.text x
 ppr (Abstraction x e) = 
-    -- if this starts with \$.\#.term then try to parse it as a numeral
-    let intRepr = (if (x == "$") && (isChurchAbstr e) then (churchToInt (getChurchTerm e)) else Nothing) in
+    -- try to parse it as a numeral
+    let intRepr = parseChurch (Abstraction x e) in
     -- if we parsed it as a numeral successfully, return the number representation
-    if isJust intRepr then PP.int(fromJust intRepr)
-    -- else parse it as a normal term
-    else (PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
+    case intRepr of
+      Just churchInt -> PP.int $ churchInt
+    -- else show it as a normal abstraction
+      Nothing -> (PP.fcat [(PP.fcat [PP.text "\\",PP.text x,PP.text "."]),(ppr e)])
 ppr apply = PP.fcat (map parenApp (args apply))
 
 
