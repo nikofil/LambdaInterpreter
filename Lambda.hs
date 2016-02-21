@@ -54,6 +54,13 @@ visit (Application x y)
 
 visit (Var v) = Red (Var v) ""
 
+visit (Abstraction x (Application z (Var w)))
+    | x == w && not (isFreeIn x z) = Red (z) "eta"
+    | otherwise = Red (Abstraction x redTerm) redType
+    where reduction = visit (Application z (Var w))
+          redTerm = reductionTerm(reduction)
+          redType = reductionType(reduction)
+
 visit (Abstraction x y) = Red (Abstraction x yReductionTerm) yReductionType
     where yReduction = visit y
           yReductionTerm = reductionTerm(yReduction)
