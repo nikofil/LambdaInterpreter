@@ -2,10 +2,9 @@ import Parser
 import Data.Char
 import Data.List
 
-data Reduction = Red Term String deriving(Show, Eq)
-
-reductionTerm (Red term _) = term
-reductionType (Red _ rtype) = rtype
+data Reduction = Reduction { reductionTerm :: Term
+                           , reductionType :: String
+                           } deriving(Show, Eq)
 
 -- main method - parse string, apply one b-reduction and pretty-print it again
 pp s = (visit.myparse) s
@@ -40,28 +39,28 @@ replaceVar (Abstraction x y) var rep
     | otherwise = (Abstraction x (replaceVar y var rep)) -- replace normally
 
 -- visit all terms depth-first until we find a function application, upon which we use the replace method
-visit (Application (Abstraction x y) z) = Red (replaceVar y x z) "beta"
+visit (Application (Abstraction x y) z) = Reduction (replaceVar y x z) "beta"
 
 visit (Application x y)
-    | xReductionTerm /= x = Red (Application xReductionTerm y) xReductionType
-    | otherwise = Red (Application x yReductionTerm) yReductionType
+    | xReductionTerm /= x = Reduction (Application xReductionTerm y) xReductionType
+    | otherwise = Reduction (Application x yReductionTerm) yReductionType
     where xReduction = visit x
-          xReductionTerm = reductionTerm(xReduction)
-          xReductionType = reductionType(xReduction)
+          xReductionTerm = reductionTerm xReduction
+          xReductionType = reductionType xReduction
           yReduction = visit y
-          yReductionTerm = reductionTerm(yReduction)
-          yReductionType = reductionType(yReduction)
+          yReductionTerm = reductionTerm yReduction
+          yReductionType = reductionType yReduction
 
-visit (Var v) = Red (Var v) ""
+visit (Var v) = Reduction (Var v) ""
 
 visit (Abstraction x (Application z (Var w)))
-    | x == w && not (isFreeIn x z) = Red (z) "eta"
-    | otherwise = Red (Abstraction x redTerm) redType
+    | x == w && not (isFreeIn x z) = Reduction (z) "eta"
+    | otherwise = Reduction (Abstraction x redTerm) redType
     where reduction = visit (Application z (Var w))
-          redTerm = reductionTerm(reduction)
-          redType = reductionType(reduction)
+          redTerm = reductionTerm reduction
+          redType = reductionType reduction
 
-visit (Abstraction x y) = Red (Abstraction x yReductionTerm) yReductionType
+visit (Abstraction x y) = Reduction (Abstraction x yReductionTerm) yReductionType
     where yReduction = visit y
-          yReductionTerm = reductionTerm(yReduction)
-          yReductionType = reductionType(yReduction)
+          yReductionTerm = reductionTerm yReduction
+          yReductionType = reductionType yReduction
