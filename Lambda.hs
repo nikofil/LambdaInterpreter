@@ -6,8 +6,19 @@ data Reduction = Reduction { reductionTerm :: Term
                            , reductionType :: String
                            } deriving(Show, Eq)
 
--- main method - parse string, apply one b-reduction and pretty-print it again
-pp s = (visit.myparse) s
+-- main method
+-- applies consecutive reductions to the given lambda term.
+reduce term
+    | term /= redTerm = Result (finalTerm result)
+                               (1 + (reductionCount result))
+                               (redTerm:(reductionTerms result))
+                               (redType:(reductionTypes result))
+    | otherwise = if redType == "" then Result term 0 [] []
+                  else Result term 1 [term] [redType ++ " - infinite loop"]
+    where reduction = visit term
+          redTerm = reductionTerm reduction
+          redType = reductionType reduction
+          result = reduce redTerm
 
 -- (isFreeIn vn t) returns true iff the var named vn is a free var in the term t
 isFreeIn vn (Application x y) = isFreeIn vn x || isFreeIn vn y
