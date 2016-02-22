@@ -27,8 +27,8 @@ isFreeIn vn (Var x) = x == vn
 
 isFreeIn vn (Abstraction x y) = x /= vn && isFreeIn vn y
 
--- find a way to a_rename a variable by finding a var name that is not bound in the abstraction term
-a_rename expr = [head ((['a'..'z'] ++ ['A'..'Z']) \\ (allFreeIn expr))]
+-- find a variable that is not free in term1 and term2
+notFreeIn term1 term2 = [head ((['a'..'z'] ++ ['A'..'Z']) \\ ((allFreeIn term1) ++ (allFreeIn term2)))]
 
 -- find all free variables in an expression
 allFreeIn (Application x y) = allFreeIn x ++ allFreeIn y
@@ -42,12 +42,17 @@ replaceVar (Application x y) var rep = Application (replaceVar x var rep) (repla
 
 replaceVar (Var v) var rep = if v == var then rep else (Var v)
 
+-- case 1: if the abstraction binds the var we are replacing, don't replace.
+-- case 2: if the abstraction's var is free in the replacement term and the var
+--         we are replacing is free in the body of the abstraction, rename the
+--         abstraction's var so as not be free in the union of free variables of
+--         the replacement term and the abstraction's body.
+-- case 3: replace normally.
 replaceVar (Abstraction x y) var rep
-    | x == var = (Abstraction x y) -- the new abstraction binds the var we are trying to replace, so we stop here
-    | (isFreeIn x rep) = -- in the term exists a free var with the same name which we need to a-rename first
-        let newvar = a_rename y in
+    | x == var = (Abstraction x y)
+    | (isFreeIn x rep && isFreeIn var y) = let newvar = notFreeIn y rep in
         (Abstraction newvar (replaceVar (replaceVar y x (Var newvar)) var rep))
-    | otherwise = (Abstraction x (replaceVar y var rep)) -- replace normally
+    | otherwise = (Abstraction x (replaceVar y var rep))
 
 -- visit all terms depth-first until we find a function application, upon which we use the replace method
 visit (Application (Abstraction x y) z) = Reduction (replaceVar y x z) "beta"
