@@ -15,7 +15,11 @@ data Term = Var String
           | Abstraction String Term
           deriving(Show,Eq)
 
-data Result = Res Term Int [Term] [String] deriving(Show,Eq)
+data Result = Result { finalTerm :: Term
+                     , reductionCount :: Int
+                     , reductionTerms :: [Term]
+                     , reductionTypes :: [String]
+                     } deriving(Show, Eq) 
 
 -------------------- PARSER --------------------------------
 
@@ -123,10 +127,4 @@ parseInputString = myparse inputString
 myterm = Application (Abstraction "x" ( Abstraction "y"  (Var "x"))) (Abstraction "z" ( Var "z"))
 
 prettyPrinted = prettyprint myterm
-
-
-
-
-
-
 
