@@ -64,13 +64,13 @@ encodings = do
     "sub"     -> "\\m.\\n.n(\\n.\\$.\\#.n(\\g.\\h.h(g$))(\\u.#)(\\u.u))m"
     "mult"    -> "\\m.\\n.\\$.m(n$)"
     "pow"     -> "\\b.\\e.eb"
-    "true"    -> "\\a.\\b.a"
-    "false"   -> "\\a.\\b.b"
+    "true"    -> "\\#.\\$.#"
+    "false"   -> "\\#.\\$.$"
     "and"     -> "\\p.\\q.pqp"
     "or"      -> "\\p.\\q.ppq"
-    "not"     -> "\\p.\\a.\\b.pba"
+    "not"     -> "\\p.\\#.\\$.p$#"
     "if"      -> "\\p.\\a.\\b.pab"
-    "iszero"  -> "\\n.n(\\x.(\\a.\\b.b))(\\a.\\b.a)"
+    "iszero"  -> "\\n.n(\\x.(@false))(@true)"
     "Y"       -> "\\g.(\\x.g(xx))(\\x.g(xx))" 
    ))
 
@@ -107,6 +107,10 @@ churchToInt _ = Nothing
 
 ppr :: Term -> PP.Doc
 ppr (Var x) = PP.text x
+
+ppr (Abstraction "#" (Abstraction "$" (Var "#"))) = PP.text "(@true)"
+ppr (Abstraction "#" (Abstraction "$" (Var "$"))) = PP.text "(@false)"
+
 ppr (Abstraction x e) = 
     -- try to parse it as a numeral
     let intRepr = parseChurch (Abstraction x e) in
