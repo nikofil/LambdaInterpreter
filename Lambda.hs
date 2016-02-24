@@ -31,7 +31,11 @@ helper_reduce term no_eta_flag
           redType = reductionType reduction
           result = helper_reduce redTerm no_eta_flag
 
-run s = (prettyprint.finalTerm.b_reduce.myparse) s
+-- get a list of the intermediate reductions and terms
+run_and_get_reductions s = (\reds -> zip (reductionTypes reds) (map prettyprint $ reductionTerms reds)) (b_reduce.myparse $ s)
+
+-- format and print the above list
+run s = putStrLn $ foldl1 (++) $ map (\(x,y) -> x ++ "\t->\t" ++ y ++ "\n") $ run_and_get_reductions s
 
 --------------------------------Helper Methods----------------------------------
 
