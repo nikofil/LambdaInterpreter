@@ -58,10 +58,20 @@ encodings = do
   char '@'
   datatype <- many letter
   return(myparse (case datatype of
-    "succ"  -> "\\n.\\$.\\#.$(n$#)"
-    "true"  -> "\\a.\\b.a"
-    "false" -> "\\a.\\b.b"
-    "if"    -> "\\p.\\a.\\b.pab"
+    "succ"    -> "\\n.\\$.\\#.$(n$#)"
+    "pred"    -> "\\n.\\$.\\#.n(\\g.\\h.h(g$))(\\u.#)(\\u.u)"
+    "plus"    -> "\\m.\\n.\\$.\\#.m$(n$#)"
+    "sub"     -> "\\m.\\n.n(\\n.\\$.\\#.n(\\g.\\h.h(g$))(\\u.#)(\\u.u))m"
+    "mult"    -> "\\m.\\n.\\$.m(n$)"
+    "pow"     -> "\\b.\\e.eb"
+    "true"    -> "\\a.\\b.a"
+    "false"   -> "\\a.\\b.b"
+    "and"     -> "\\p.\\q.pqp"
+    "or"      -> "\\p.\\q.ppq"
+    "not"     -> "\\p.\\a.\\b.pba"
+    "if"      -> "\\p.\\a.\\b.pab"
+    "iszero"  -> "\\n.n(\\x.(\\a.\\b.b))(\\a.\\b.a)"
+    "Y"       -> "\\g.(\\x.g(xx))(\\x.g(xx))" 
    ))
 
 lambdaVar :: Parser Term
