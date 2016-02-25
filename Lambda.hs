@@ -32,7 +32,7 @@ helper_reduce term no_eta_flag
           result = helper_reduce redTerm no_eta_flag
 
 -- print final result only
-run s = (prettyprint.finalTerm.b_reduce.myparse) s
+run s = putStrLn $ (prettyprint.finalTerm.b_reduce.myparse) s
 
 -- get a list of the intermediate reductions and terms
 run_and_get_reductions s = (\reds -> zip (reductionTypes reds) (map prettyprint $ reductionTerms reds)) (b_reduce.myparse $ s)
