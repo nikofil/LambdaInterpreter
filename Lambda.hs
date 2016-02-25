@@ -1,3 +1,5 @@
+module Lambda where
+
 import Parser
 import Data.Char
 import Data.List
