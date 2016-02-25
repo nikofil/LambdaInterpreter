@@ -45,20 +45,22 @@ The same program in pure lambda calculus
 
 ### Environment Commands
 
-* **@succ**     successor of a number
-* **@pred**     predecessor of a number
-* **@plus**     addition of two numbers
-* **@sub**      subtraction of two numbers
-* **@mult**     multiplication of two numbers
-* **@pow**      exponentiation of two numbers
-* **@true**     boolean value True
-* **@false**    boolean value False
-* **@and**      logic operator and
-* **@or**       logic operator or
-* **@not**      logic operator not
-* **@if**       if-else structure
-* **@iszero**   returns @true if the number is zero
-* **@Y**        Y combinator for recursion
+| Command | Description |
+| --- | --- |
+| @succ | Successor of a number |
+| @pred | Predecessor of a number |
+| @plus | Addition of two numbers |
+| @sub  | Subtraction of two numbers |
+| @mult | Multiplication of two numbers |
+| @pow  | Exponentiation of two numbers |
+| @true | Boolean value TRUE |
+| @false | Boolean value FALSE |
+| @and | Logic operator AND |
+| @or | Logic operator OR |
+| @not | logic operator NOT |
+| @if | IF-ELSE statement |
+| @iszero | Returns @true if the number is zero |
+| @Y | Y combinator for recursion |
 
 *Number* means *Church numeral*
 
