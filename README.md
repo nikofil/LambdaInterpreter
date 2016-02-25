@@ -11,9 +11,13 @@ Ioannis V.
 Lambda expressions should abide to the following format.
 
 The term
-    λx.λy.xy
+```
+λx.λy.xy
+```
 should be written as
-    \\x.\\y.xy
+```
+\\x.\\y.xy
+```
 
 Only one symbol variables are suppported.
 
@@ -22,10 +26,14 @@ interpreter. The user can write small lambda calculus programs without recalling
 any lambda terms.
 
 A simple program using the enviroment feature
-    (\\x.@if@iszero(x)(@true)(@false))(5)
+```
+(\\x.@if@iszero(x)(@true)(@false))(5)
+```
 
 The same program in pure lambda calculus
-    (\\x.(\\p.\\a.\\b.pab)(\\n.n(\\x.(\\a.\\b.b))(\\a.\\b.a))(x)(\\a.\\b.a)(\\a.\\b.b))(5)
+```
+(\\x.(\\p.\\a.\\b.pab)(\\n.n(\\x.(\\a.\\b.b))(\\a.\\b.a))(x)(\\a.\\b.a)(\\a.\\b.b))(5)
+```
 
 The two main functions:
 
